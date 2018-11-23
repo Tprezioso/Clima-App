@@ -53,7 +53,8 @@ class WeatherViewController: UIViewController, CLLocationManagerDelegate {
         Alamofire.request(url, method: .get, parameters:parameters).responseJSON {
             response in
             if response.result.isSuccess {
-                <#code#>
+                let weatherJSON : JSON = JSON(response.result.value!)
+                self.updateWeatherData(json: weatherJSON)
             } else {
                 print("error \(String(describing: response.result.error))")
                 self.cityLabel.text = "Connection Issues"
@@ -61,18 +62,16 @@ class WeatherViewController: UIViewController, CLLocationManagerDelegate {
             
         }
     }
-
-    
-    
-    
-    
     
     //MARK: - JSON Parsing
     /***************************************************************/
    
     
     //Write the updateWeatherData method here:
-    
+    func updateWeatherData(json: JSON) {
+        let tempResult = json["main"]["temp"]
+        print(tempResult)
+    }
 
     
     
@@ -97,6 +96,8 @@ class WeatherViewController: UIViewController, CLLocationManagerDelegate {
         let location = locations[locations.count - 1]
         if location.horizontalAccuracy > 0 {
             locationManager.stopUpdatingLocation()
+            locationManager.delegate = nil
+            
             let latitude = String(location.coordinate.latitude)
             let longitude = String(location.coordinate.longitude)
             
