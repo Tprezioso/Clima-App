@@ -12,13 +12,11 @@ import Alamofire
 import SwiftyJSON
 
 
-class WeatherViewController: UIViewController, CLLocationManagerDelegate {
+class WeatherViewController: UIViewController, CLLocationManagerDelegate, ChangeCityDelegate {
     
     //Constants
     let WEATHER_URL = "http://api.openweathermap.org/data/2.5/weather"
     let APP_ID = "fe68eba08ab0baef9b8a6252ca212f7e"
-    /***Get your own App ID at https://openweathermap.org/appid ****/
-    
 
     //TODO: Declare instance variables here
     let locationManager = CLLocationManager()
@@ -40,8 +38,6 @@ class WeatherViewController: UIViewController, CLLocationManagerDelegate {
         locationManager.requestWhenInUseAuthorization()
         locationManager.startUpdatingLocation()
     }
-    
-    
     
     //MARK: - Networking
     /***************************************************************/
@@ -88,13 +84,9 @@ class WeatherViewController: UIViewController, CLLocationManagerDelegate {
     //Write the updateUIWithWeatherData method here:
     func updateUIWeatherData() {
         cityLabel.text = weatherDataModel.city
-        temperatureLabel.text = String(weatherDataModel.temperature)
+        temperatureLabel.text = String(weatherDataModel.temperature) + "°"
         weatherIcon.image = UIImage(named: weatherDataModel.weatherIconName)
     }
-    
-    
-    
-    
     
     //MARK: - Location Manager Delegate Methods
     /***************************************************************/
@@ -115,7 +107,6 @@ class WeatherViewController: UIViewController, CLLocationManagerDelegate {
         }
     }
     
-    
     //Write the didFailWithError method here:
     
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
@@ -128,16 +119,21 @@ class WeatherViewController: UIViewController, CLLocationManagerDelegate {
     //MARK: - Change City Delegate methods
     /***************************************************************/
     
-    
     //Write the userEnteredANewCityName Delegate method here:
-    
-
+    func userEnteredANewCityName(city: String) {
+        let params : [String : String] = ["q" : city, "appid" : APP_ID]
+        getWeatherData(url: WEATHER_URL, parameters: params)
+    }
     
     //Write the PrepareForSegue Method here
     
-    
-    
-    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == "changeCityName" {
+            let destinationVC = segue.destination as! ChangeCityViewController
+            destinationVC.delegate = self
+            
+        }
+    }
     
 }
 
